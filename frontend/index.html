@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Task Manager</title>
+
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial;
+      display: flex;
+      height: 100vh;
+    }
+
+    .left {
+      flex: 1;
+      background: linear-gradient(135deg, #6a11cb, #2575fc);
+      color: white;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+    }
+
+    .right {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: #f4f4f4;
+    }
+
+    .box {
+      background: white;
+      padding: 30px;
+      border-radius: 10px;
+      width: 300px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+
+    input, select {
+      width: 100%;
+      padding: 10px;
+      margin: 8px 0;
+    }
+
+    button {
+      width: 100%;
+      padding: 10px;
+      background: #6a11cb;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #4e0fa3;
+    }
+
+    .toggle {
+      text-align: center;
+      margin-top: 10px;
+      cursor: pointer;
+      color: blue;
+    }
+
+    .hidden {
+      display: none;
+    }
+  </style>
+</head>
+
+<body>
+
+<!-- LEFT SIDE -->
+<div class="left">
+  <div>
+    <h1>Welcome Back 👋</h1>
+    <p>Manage your team and tasks efficiently</p>
+  </div>
+</div>
+
+<!-- RIGHT SIDE -->
+<div class="right">
+  <div class="box">
+
+    <!-- LOGIN -->
+    <div id="loginBox">
+      <h2>Login</h2>
+      <input id="loginEmail" placeholder="Email">
+      <input id="loginPassword" type="password" placeholder="Password">
+      <button onclick="login()">Login</button>
+
+      <div class="toggle" onclick="showSignup()">
+        New user? Create account
+      </div>
+    </div>
+
+    <!-- SIGNUP -->
+    <div id="signupBox" class="hidden">
+      <h2>Signup</h2>
+      <input id="name" placeholder="Name">
+      <input id="email" placeholder="Email">
+      <input id="password" type="password" placeholder="Password">
+
+      <select id="role">
+        <option value="admin">Admin</option>
+        <option value="member">Member</option>
+      </select>
+
+      <button onclick="signup()">Signup</button>
+
+      <div class="toggle" onclick="showLogin()">
+        Already have account? Login
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+
+
+ 
+async function login() {
+  const res = await fetch("http://localhost:5000/api/auth/login", {
+    method: "POST",
+    headers: {"Content-Type": "application/json"},
+    body: JSON.stringify({
+      email: document.getElementById("loginEmail").value,
+      password: document.getElementById("loginPassword").value
+    })
+  });
+
+  const data = await res.json();
+  console.log("LOGIN:", data);
+
+  if (!data.token) {
+    alert(data.message);
+    return;
+  }
+
+  // ✅ STORE PROPERLY
+  const role = data.role || (data.user && data.user.role);
+
+  localStorage.setItem("token", data.token);
+  localStorage.setItem("role", role);
+
+  alert("Logged in as " + role);
+
+  window.location.href = "dashboard.html";
+}
+
+
+</script>
+
+</body>
+</html>
